@@ -1,13 +1,19 @@
-import 'package:flutter/material.dart';
+import 'dart:collection';
 
-void main() => runApp(MyApp());
+import 'package:flutter/gestures.dart';
+import 'package:flutter/material.dart';
+List model_data = [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1];
+void main() {
+  
+  
+  runApp(MyApp());
+}
 
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      
       title: 'heart disease prediction',
       theme: ThemeData(
         // This is the theme of your application.
@@ -21,92 +27,229 @@ class MyApp extends StatelessWidget {
         // is not restarted.
         primarySwatch: Colors.blue,
       ),
-      home: MyHomePage(title: ' Heart Disease Prediction'),
+      home: MyPage(),
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  MyHomePage({Key key, this.title}) : super(key: key);
-
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
-
-  final String title;
-
-  @override
-  _MyHomePageState createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-
-  void _incrementCounter() {
-    setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
-    });
-  }
-
+class SinglePage extends StatelessWidget {
+  final Widget child;
+  final bool isEnd;
+  final Color color;
+  SinglePage(this.child, {this.color = Colors.grey, this.isEnd = false});
   @override
   Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
-    return Scaffold(
-      appBar: AppBar(
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title),
-      ),
-      body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
-        child: Column(
-          // Column is also a layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Invoke "debug painting" (press "p" in the console, choose the
-          // "Toggle Debug Paint" action from the Flutter Inspector in Android
-          // Studio, or the "Toggle Debug Paint" command in Visual Studio Code)
-          // to see the wireframe for each widget.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Text(
-              'You have pushed the button this many times:',
+    if (this.isEnd) {
+      return Container(
+        color: this.color,
+        child: Center(
+          child: Card(
+            elevation: 15,
+            child: Padding(
+              child: this.child,
+              padding: EdgeInsets.all(15),
             ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.display1,
-            ),
-          ],
+          ),
         ),
+      );
+    } else {
+      return Container(
+        color: this.color,
+        child: Column(children: [
+          Spacer(
+            flex: 6,
+          ),
+          Card(
+            margin: EdgeInsets.all(15),
+            elevation: 15,
+            child: Padding(
+              child: this.child,
+              padding: EdgeInsets.all(15),
+            ),
+          ),
+          Spacer(
+            flex: 5,
+          ),
+          Row(children: [
+            Spacer(
+              flex: 8,
+            ),
+            Icon(
+              Icons.arrow_forward_ios,
+            ),
+            Spacer(),
+          ]),
+          Spacer()
+        ]),
+      );
+    }
+  }
+}
+
+class DateForm extends StatefulWidget {
+  @override
+  _DateState createState() {
+    return _DateState();
+  }
+}
+
+class _DateState extends State<DateForm> {
+  DateTime _dateTime;
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: <Widget>[
+        Spacer(
+          flex: 1,
+        ),
+        Text(
+          'DOB: ',
+          style: TextStyle(fontSize: 20, fontWeight: FontWeight.w400),
+        ),
+        Spacer(
+          flex: 1,
+        ),
+        Text(
+          _dateTime == null ? '' : this._dateTime.toString().substring(0, 10),
+          style: TextStyle(fontSize: 20, fontWeight: FontWeight.w300),
+        ),
+        Spacer(
+          flex: 5,
+        ),
+        Center(
+          child: RaisedButton(
+            color: Colors.teal[50],
+            elevation: 5,
+            child: Padding(
+              padding: EdgeInsets.all(15),
+              child: Icon(
+                Icons.calendar_today,
+                color: Colors.teal,
+              ),
+            ),
+            onPressed: () {
+              showDatePicker(
+                context: context,
+                initialDate: DateTime(1995),
+                firstDate: DateTime(1920),
+                lastDate: DateTime(2020),
+              ).then((data) {
+                this._dateTime = data;
+                this.setState(() => {});
+                model_data[0] = data;
+              });
+            },
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class Gender extends StatefulWidget {
+  @override
+  _GenderForm createState() {
+    return _GenderForm();
+  }
+}
+
+class _GenderForm extends State<Gender> {
+  int group = 1;
+  final _formkey = GlobalKey<FormState>();
+  Widget build(BuildContext context) {
+    return Form(
+      key: _formkey,
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: <Widget>[
+          Container(
+            padding: EdgeInsets.only(bottom: 7.5),
+            child: Text(
+              'Gender:',
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.w400),
+            ),
+          ),
+          Row(
+            children: <Widget>[
+              Radio(
+                activeColor: Colors.teal[500],
+                value: 0,
+                groupValue: group,
+                onChanged: (T) {
+                  print(T);
+
+                  this.setState(() {
+                    group = T;
+                  });
+
+                  model_data[1] = T ? 2 : 1;
+                },
+              ),
+              Text('Male'),
+            ],
+          ),
+          Row(
+            children: <Widget>[
+              Radio(
+                activeColor: Colors.teal[500],
+                value: 1,
+                groupValue: group,
+                onChanged: (T) {
+                  print(T);
+                  this.setState(() {
+                    group = T;
+                  });
+                  model_data[1] = T? 2:1;
+                },
+              ),
+              Text('Female'),
+            ],
+          ),
+        ],
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
+    );
+  }
+}
+
+class FirstForm extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: <Widget>[DateForm(), Gender()],
+    );
+  }
+}
+
+class MyPage extends StatelessWidget {
+  PageController controller = PageController();
+  @override
+  Widget build(BuildContext buildContext) {
+    return PageView(
+      controller: controller,
+      onPageChanged: (page){
+        print(model_data[0]);
+        if(model_data[0]==-1){
+          this.controller.animateToPage(1, duration: Duration(microseconds: 200), curve: ElasticInCurve());
+        }
+      },
+      dragStartBehavior: DragStartBehavior.start,
+      // controller: PageController(viewportFraction: 0.9),
+      children: <Widget>[
+        SinglePage(
+          Text(
+            'HELLO!',
+            style: TextStyle(fontSize: 40, color: Colors.grey[700]),
+          ),
+          color: Colors.grey[600],
+        ),
+        SinglePage(FirstForm(), color: Colors.teal),
+        SinglePage(
+          Text('Bye!'),
+          color: Colors.blueGrey,
+          isEnd: true,
+        )
+      ],
     );
   }
 }
